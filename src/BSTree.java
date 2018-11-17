@@ -1,5 +1,4 @@
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 public class BSTree<T extends Comparable<? super T>> implements Iterable {
 
@@ -113,6 +112,7 @@ public class BSTree<T extends Comparable<? super T>> implements Iterable {
                     }
                 }
             }
+            nelems++;
             node.setRight(null);
             node.setLeft(null);
         }
@@ -191,24 +191,48 @@ public class BSTree<T extends Comparable<? super T>> implements Iterable {
 
     //******************ITERATOR STARTS HERE!!!********************************
     public class BSTree_Iterator implements Iterator<T> {
+        Stack<BSTNode> leftPath;
+
+        private BSTNode getLeftPath(BSTNode node){
+            if(node.getLeft() == null){
+                return node;
+            }else{
+                return getLeftPath(node.getLeft());
+            }
+        }
 
         public BSTree_Iterator() {
-            //TODO
+            leftPath = new Stack<>();
+            BSTNode leftNode = root;
+            while (leftNode != null) {
+                leftPath.push(leftNode);
+                leftNode = leftNode.getLeft();
+            }
         }
 
         public boolean hasNext() {
-            //TODO
-            return false;
+            return !leftPath.empty();
         }
 
-        public T next() {
-            //TODO
-            return null;
+        public T next() throws NoSuchElementException {
+            if(!hasNext()){
+                throw new NoSuchElementException();
+            }else{
+                BSTNode node = leftPath.pop();
+                T key = node.getKey();
+                if (node.getRight() != null) {
+                    node = node.getRight();
+                    while (node != null) {
+                        leftPath.push(node);
+                        node = node.getLeft();
+                    }
+                }
+                return key;
+            }
         }
     }
 
     public Iterator<T> iterator() {
-        //TODO
-        return null;
+        return new BSTree_Iterator();
     }
 }
