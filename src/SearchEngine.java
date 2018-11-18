@@ -1,7 +1,10 @@
+import sun.awt.image.ImageWatched;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class SearchEngine {
@@ -19,8 +22,24 @@ public class SearchEngine {
 				//read two lines - one for document and the next line for the list of keywords
 				String document = scanner.nextLine().trim();
 				String keywords[] = scanner.nextLine().split(" ");
-				
-				//TODO
+
+				for(String keyword : keywords){
+                    //check if a keyword exists in the BST
+                    keyword = keyword.toLowerCase();
+                    if(searchTree.findKey(keyword)){
+                        //add document to datalist of node with keyword as key
+                        if(!searchTree.findDataList(keyword).contains(document)){
+                            searchTree.insertData(keyword, document);
+                        }
+                    }else{
+                        //add node to BST with keyword as key
+                        searchTree.insert(keyword);
+                        //add document to dataList of node
+                        searchTree.insertData(keyword, document);
+                    }
+
+                }
+
 				
 			}
 			scanner.close();
@@ -37,8 +56,54 @@ public class SearchEngine {
 	 * @returns LinkedList of documents in which the query string is found
 	 */
 	public static void searchMyQuery(BSTree<String> searchTree, String query) {
-		
-		//TODO
+	    String[] queryWords = query.toLowerCase().split(" ");
+        LinkedList<String> printedDocs = new LinkedList<>();
+        LinkedList<String> intersection = new LinkedList<>();
+	    if(queryWords.length > 1){
+            try{
+                intersection.addAll(searchTree.findDataList(queryWords[0]));
+                for(int i = 1; i < queryWords.length; i++){
+                    if(!searchTree.findKey(queryWords[i]) || searchTree.findDataList(queryWords[i]) == null) {
+                        print(query, null);
+                        break;
+                    }else if(intersection.isEmpty()){
+                        intersection = searchTree.findDataList(queryWords[i]);
+                    }else{
+                        LinkedList<String> documents;
+                        documents = searchTree.findDataList(queryWords[i]);
+                        intersection.retainAll(documents);
+                    }
+                }
+            }catch (IllegalArgumentException e){
+                intersection.clear();
+            }
+            print(query, intersection);
+            if(!intersection.isEmpty()){
+                printedDocs.addAll(intersection);
+            }
+        }
+        for(String keyword: queryWords){
+            LinkedList<String> documents;
+            LinkedList<String> relatedDocs = new LinkedList<>();
+            try{
+                documents = searchTree.findDataList(keyword);
+                if(printedDocs.containsAll(documents)){
+                    continue;
+                }
+                for(String document : documents){
+                    if(!printedDocs.contains(document)){
+                        relatedDocs.add(document);
+                    }
+                }
+            }catch(IllegalArgumentException e){
+                relatedDocs.clear();
+            }
+            print(keyword, relatedDocs);
+            if(!relatedDocs.isEmpty()){
+                printedDocs.addAll(relatedDocs);
+            }
+        }
+
 	}
 	
 	/*Print method 
