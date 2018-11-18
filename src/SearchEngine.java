@@ -1,10 +1,7 @@
-import sun.awt.image.ImageWatched;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.Iterator;
 import java.util.Scanner;
 
 public class SearchEngine {
