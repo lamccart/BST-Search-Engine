@@ -3,7 +3,7 @@ import org.junit.Test;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class BSTreeTest {
+public class BSTreeTester {
 
     @Test
     public void testGetRoot() {
